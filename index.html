@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CyberTrace AI - Live Inbox Analysis</title>
+    <title>CyberTrace AI - Email Forensics</title>
     <!-- Leaflet CSS for Map -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="style.css">
@@ -15,15 +15,27 @@
         <!-- LEFT PANE: The Inbox List -->
         <aside class="inbox-pane">
             <div class="inbox-header">
-                <h2>Live Monitored Inbox</h2>
-                <span class="status-dot green"></span>
+                <div>
+                    <h2>Live Monitored Inbox</h2>
+                    <span class="status-dot green"></span>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-icon" id="btn-sync-inbox" title="Sync live mailbox">
+                        <svg id="sync-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <polyline points="23 4 23 10 17 10"></polyline>
+                            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                        </svg>
+                    </button>
+                    <button class="btn-sm" id="btn-open-modal">+ Ingest</button>
+                </div>
             </div>
             <div class="email-list" id="email-list">
-                <!-- Emails will be injected here by JavaScript -->
+                <!-- Emails injected here by JavaScript -->
             </div>
         </aside>
 
-        <!-- RIGHT PANE: The Threat Analysis Dashboard -->
+        <!-- RIGHT PANE: Threat Analysis Dashboard -->
         <main class="analysis-pane">
             <!-- Empty State -->
             <div id="empty-state" class="empty-state">
@@ -41,7 +53,7 @@
                 <p>AI Engine extracting headers and geolocating origin...</p>
             </div>
 
-            <!-- Dashboard Content (Hidden until predicted) -->
+            <!-- Dashboard Content -->
             <div id="dashboard-content" class="hidden">
                 <header class="dashboard-header">
                     <div class="incident-title">
@@ -74,53 +86,25 @@
         </main>
     </div>
 
-    <!-- Leaflet JS -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="app.js"></script>
-    <!-- In the Left Pane header: Add the '+ Ingest Email' button -->
-    <div class="inbox-header">
-        <div>
-            <h2>Live Monitored Inbox</h2>
-            <span class="status-dot green"></span>
-        </div>
-        <button class="btn-sm" id="btn-open-modal">+ Ingest</button>
-    </div>
-    
-    <!-- ========================================== -->
-    <!-- PASTE THIS MODAL RIGHT BEFORE </body> TAG  -->
-    <!-- ========================================== -->
+    <!-- INGESTION MODAL -->
     <div id="email-modal" class="modal-backdrop hidden">
         <div class="modal-card">
             <div class="modal-header">
                 <h3>Ingest New Email for Analysis</h3>
                 <button id="btn-close-modal" class="close-btn">&times;</button>
             </div>
-    
+
             <form id="ingest-form">
-                <!-- Option 1: File Upload (.eml) -->
                 <div class="form-group">
-                    <label>Option 1: Upload Raw Email (.eml / .msg)</label>
-                    <input type="file" id="input-eml-file" accept=".eml, .msg" class="input-control" />
-                </div>
-    
-                <div class="divider"><span>OR</span></div>
-    
-                <!-- Option 2: Manual Text Entry -->
-                <div class="form-group">
-                    <label>Option 2: Sender & Subject</label>
+                    <label>Sender (Spoofed or Real)</label>
                     <input type="text" id="input-sender" placeholder="e.g. security@suspicious-domain.com"
-                        class="input-control" />
-                    <input type="text" id="input-subject" placeholder="e.g. URGENT: Password Reset Required"
-                        class="input-control" style="margin-top: 8px;" />
+                        class="input-control" required />
                 </div>
-    
                 <div class="form-group">
-                    <label>Raw Email Headers / Body</label>
-                    <textarea id="input-raw-text" rows="4"
-                        placeholder="Paste full raw email with headers or body content here..."
-                        class="input-control"></textarea>
+                    <label>Subject Line</label>
+                    <input type="text" id="input-subject" placeholder="e.g. URGENT: Password Reset Required"
+                        class="input-control" required />
                 </div>
-    
                 <div class="modal-actions">
                     <button type="button" class="btn-cancel" id="btn-cancel-modal">Cancel</button>
                     <button type="submit" class="btn primary-btn">Ingest & Run AI Trace</button>
@@ -128,24 +112,10 @@
             </form>
         </div>
     </div>
-    <div class="inbox-header">
-        <div>
-            <h2>Live Monitored Inbox</h2>
-            <span class="status-dot green"></span>
-        </div>
-        <div class="header-actions">
-            <!-- New Sync Button -->
-            <button class="btn-icon" id="btn-sync-inbox" title="Sync live mailbox">
-                <svg id="sync-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                    stroke-width="2">
-                    <polyline points="23 4 23 10 17 10"></polyline>
-                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
-                </svg>
-            </button>
-            <!-- Existing Ingest Button -->
-            <button class="btn-sm" id="btn-open-modal">+ Ingest</button>
-        </div>
-    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="app.js"></script>
 </body>
 
 </html>

@@ -30,7 +30,7 @@ body {
     height: 100%;
 }
 
-/* Left Pane: Inbox */
+/* --- LEFT PANE: INBOX --- */
 .inbox-pane {
     width: 350px;
     background-color: var(--bg-dark);
@@ -49,6 +49,8 @@ body {
 
 .inbox-header h2 {
     font-size: 1.1rem;
+    display: inline-block;
+    margin-right: 8px;
 }
 
 .status-dot.green {
@@ -57,8 +59,78 @@ body {
     background-color: #4caf50;
     border-radius: 50%;
     box-shadow: 0 0 8px #4caf50;
+    display: inline-block;
 }
 
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Buttons */
+.btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.primary-btn {
+    background-color: var(--accent-blue);
+    color: white;
+}
+
+.btn-sm {
+    background-color: var(--accent-blue);
+    color: #ffffff;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btn-sm:hover {
+    opacity: 0.9;
+}
+
+.btn-icon {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    border-radius: 4px;
+    padding: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.btn-icon:hover {
+    color: var(--accent-blue);
+    border-color: var(--accent-blue);
+}
+
+.is-syncing {
+    animation: spin-reverse 1s linear infinite;
+    color: var(--accent-blue);
+}
+
+@keyframes spin-reverse {
+    0% {
+        transform: rotate(360deg);
+    }
+
+    100% {
+        transform: rotate(0deg);
+    }
+}
+
+/* Email List */
 .email-list {
     flex: 1;
     overflow-y: auto;
@@ -91,7 +163,7 @@ body {
     text-overflow: ellipsis;
 }
 
-/* Right Pane: Analysis Dashboard */
+/* --- RIGHT PANE: ANALYSIS --- */
 .analysis-pane {
     flex: 1;
     padding: 30px;
@@ -104,7 +176,7 @@ body {
     display: none !important;
 }
 
-/* Empty & Loading States */
+/* States */
 .empty-state,
 #loading-state {
     height: 100%;
@@ -140,7 +212,7 @@ body {
     }
 }
 
-/* Dashboard Layout */
+/* Dashboard Content */
 .dashboard-header {
     margin-bottom: 25px;
     border-bottom: 1px solid var(--border-color);
@@ -207,23 +279,8 @@ body {
     border-radius: 5px;
     z-index: 1;
 }
-/* Button in Inbox Header */
-.btn-sm {
-    background-color: var(--accent-blue);
-    color: #ffffff;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    font-weight: bold;
-    cursor: pointer;
-}
 
-.btn-sm:hover {
-    opacity: 0.9;
-}
-
-/* Modal Backdrop */
+/* --- MODAL --- */
 .modal-backdrop {
     position: fixed;
     top: 0;
@@ -237,7 +294,6 @@ body {
     z-index: 999;
 }
 
-/* Modal Box */
 .modal-card {
     background-color: var(--card-bg);
     border: 1px solid var(--border-color);
@@ -291,19 +347,6 @@ body {
     border-color: var(--accent-blue);
 }
 
-.divider {
-    text-align: center;
-    margin: 15px 0;
-    position: relative;
-}
-
-.divider span {
-    background-color: var(--card-bg);
-    padding: 0 10px;
-    color: var(--text-muted);
-    font-size: 0.8rem;
-}
-
 .modal-actions {
     display: flex;
     justify-content: flex-end;
@@ -318,43 +361,4 @@ body {
     padding: 8px 16px;
     border-radius: 4px;
     cursor: pointer;
-}
-.header-actions {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.btn-icon {
-    background: transparent;
-    border: 1px solid var(--border-color);
-    color: var(--text-muted);
-    border-radius: 4px;
-    padding: 6px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-}
-
-.btn-icon:hover {
-    color: var(--accent-blue);
-    border-color: var(--accent-blue);
-}
-
-/* The spinning class added via JavaScript */
-.is-syncing {
-    animation: spin-reverse 1s linear infinite;
-    color: var(--accent-blue);
-}
-
-@keyframes spin-reverse {
-    0% {
-        transform: rotate(360deg);
-    }
-
-    100% {
-        transform: rotate(0deg);
-    }
 }
