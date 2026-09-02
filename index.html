@@ -4,116 +4,259 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CyberTrace AI - Email Forensics</title>
-    <!-- Leaflet CSS for Map -->
+    <title>AI-Powered Email Threat Forensics | SIH 26106</title>
+    <!-- Map Library -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- PDF Generation Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
     <div class="app-container">
-        <!-- LEFT PANE: The Inbox List -->
-        <aside class="inbox-pane">
+        <!-- LEFT PANE: Live Inbox -->
+        <aside class="inbox-pane no-print">
             <div class="inbox-header">
                 <div>
                     <h2>Live Monitored Inbox</h2>
                     <span class="status-dot green"></span>
                 </div>
                 <div class="header-actions">
-                    <button class="btn-icon" id="btn-sync-inbox" title="Sync live mailbox">
+                    <button class="btn-icon" id="btn-sync-inbox" title="Sync live mailbox via IMAP">
                         <svg id="sync-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2">
                             <polyline points="23 4 23 10 17 10"></polyline>
                             <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
                         </svg>
                     </button>
-                    <button class="btn-sm" id="btn-open-modal">+ Ingest</button>
+                    <button class="btn-sm" id="btn-open-modal">+ Ingest Threat</button>
                 </div>
             </div>
             <div class="email-list" id="email-list">
-                <!-- Emails injected here by JavaScript -->
+                <!-- Javascript injects emails here -->
             </div>
         </aside>
 
-        <!-- RIGHT PANE: Threat Analysis Dashboard -->
+        <!-- RIGHT PANE: Analysis Canvas -->
         <main class="analysis-pane">
+
             <!-- Empty State -->
             <div id="empty-state" class="empty-state">
                 <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#3a86ff" stroke-width="1.5">
                     <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
                     <polyline points="22,6 12,13 2,6"></polyline>
                 </svg>
-                <h3>Select an email from the inbox</h3>
-                <p>The AI engine will automatically parse headers, run NLP analysis, and trace the origin IP.</p>
+                <h3>Select an email or ingest a new threat</h3>
+                <p>The AI pipeline will parse headers, run NLP classification, and execute geographic trace routing.</p>
             </div>
 
             <!-- Loading State -->
             <div id="loading-state" class="hidden">
                 <div class="spinner"></div>
-                <p>AI Engine extracting headers and geolocating origin...</p>
+                <p>Analyzing NLP syntax, verifying cryptographic signatures, and mapping IP origins...</p>
             </div>
 
             <!-- Dashboard Content -->
             <div id="dashboard-content" class="hidden">
-                <header class="dashboard-header">
+                <header class="dashboard-header no-print">
                     <div class="incident-title">
-                        <h2>Prediction Results</h2>
+                        <h2>Investigation Dashboard</h2>
                         <span id="threat-badge" class="badge">Processing...</span>
                     </div>
+                    <button id="btn-download-report" class="btn primary-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" style="margin-right: 6px;">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        Export Forensic PDF
+                    </button>
                 </header>
 
-                <div class="grid-layout">
-                    <!-- Metadata Card -->
-                    <div class="card">
-                        <h3>Raw Metadata</h3>
-                        <p><strong>From:</strong> <span id="val-sender"></span></p>
-                        <p><strong>Subject:</strong> <span id="val-subject"></span></p>
+                <!-- PRINTABLE FORENSIC REPORT -->
+                <div id="printable-report" class="formal-report">
+                    <div class="report-header print-only" style="display:none;">
+                        <h1>Email Threat Detection & Forensic Intelligence Report</h1>
+                        <p id="val-report-date"></p>
+                        <hr>
                     </div>
 
-                    <!-- NLP Analysis Card -->
-                    <div class="card">
-                        <h3>AI NLP Detection</h3>
-                        <ul id="nlp-results" class="result-list"></ul>
+                    <div class="grid-layout">
+                        <!-- Summary Table -->
+                        <div class="card full-width">
+                            <h3>Case Summary & Technical Details</h3>
+                            <table class="report-table">
+                                <tr>
+                                    <th width="15%">Case ID</th>
+                                    <td id="val-case-id" width="35%"></td>
+                                    <th width="15%">Sender</th>
+                                    <td id="val-from" width="35%"></td>
+                                </tr>
+                                <tr>
+                                    <th>Verdict</th>
+                                    <td id="val-verdict" class="highlight-verdict"></td>
+                                    <th>Subject</th>
+                                    <td id="val-subject"></td>
+                                </tr>
+                                <tr>
+                                    <th>Analyzed At</th>
+                                    <td id="val-analyzed-at"></td>
+                                    <th>Domain</th>
+                                    <td id="val-domain"></td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <!-- AI Metrics Section -->
+                        <div class="card full-width ai-report-section">
+                            <h3 class="section-title">AI Engine Classification</h3>
+                            <div class="ai-grid">
+                                <div class="ai-column">
+                                    <h4 class="sub-header">--- SPAM CLASSIFICATION ---</h4>
+                                    <table class="report-table minimalist">
+                                        <tr>
+                                            <th width="50%">Model Prediction</th>
+                                            <td id="val-ai-prediction" class="bold-val"></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Ham Probability</th>
+                                            <td id="val-ai-ham"></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Spam Probability</th>
+                                            <td id="val-ai-spam"></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="ai-column">
+                                    <h4 class="sub-header">--- SOCIAL ENGINEERING (NLP) ---</h4>
+                                    <table class="report-table minimalist">
+                                        <tr>
+                                            <th width="50%">Risk Score</th>
+                                            <td id="val-ai-se-score" class="bold-val"></td>
+                                        </tr>
+                                    </table>
+                                    <div class="pattern-box">
+                                        <h5>Detected Patterns:</h5>
+                                        <ul id="ai-patterns-list" class="pattern-list"></ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="final-threat-box flex-between">
+                                <p><strong>Aggregate Threat Score:</strong> <span id="val-final-threat-score"
+                                        class="score-highlight"></span></p>
+                                <p><strong>System Risk Level:</strong> <span id="val-final-risk-level"
+                                        class="risk-highlight"></span></p>
+                            </div>
+                        </div>
+
+                        <!-- Protocol & Geolocation -->
+                        <div class="card full-width">
+                            <h3>Authentication & Infrastructure Mapping</h3>
+                            <table class="report-table">
+                                <tr>
+                                    <th width="20%">SPF / DKIM / DMARC</th>
+                                    <td id="val-auth-status" width="30%"></td>
+                                    <th width="20%">Originating IP</th>
+                                    <td id="val-origin-ip" width="30%"></td>
+                                </tr>
+                                <tr>
+                                    <th>Geolocation</th>
+                                    <td id="val-location"></td>
+                                    <th>Hosting / ISP</th>
+                                    <td id="val-isp"></td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <!-- Relay Hops -->
+                        <div class="card full-width">
+                            <h3>SMTP Relay Trace (Chronological)</h3>
+                            <table class="report-table data-grid">
+                                <thead>
+                                    <tr>
+                                        <th>Hop #</th>
+                                        <th>IP Address</th>
+                                        <th>Hostname</th>
+                                        <th>Trusted Node</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="relay-path-body"></tbody>
+                            </table>
+                        </div>
+
+                        <!-- Visual Trace Map -->
+                        <div class="card map-card no-print">
+                            <h3>Geographic Origin Map</h3>
+                            <div id="map-container"></div>
+                        </div>
                     </div>
 
-                    <!-- GeoLocation Map Card -->
-                    <div class="card map-card">
-                        <h3>Origin Trace Map</h3>
-                        <div id="map-container"></div>
+                    <div class="report-footer print-only" style="display: none;">
+                        <p>Disclaimer: This forensic report was generated automatically by the SIH 26106 AI Threat
+                            Intelligence Platform. Findings represent confidence-based heuristic assessments and should
+                            be reviewed by a human analyst before initiating incident response protocols.</p>
                     </div>
                 </div>
             </div>
         </main>
     </div>
 
-    <!-- INGESTION MODAL -->
-    <div id="email-modal" class="modal-backdrop hidden">
+    <!-- TABBED INGESTION MODAL -->
+    <div id="email-modal" class="modal-backdrop hidden no-print">
         <div class="modal-card">
             <div class="modal-header">
-                <h3>Ingest New Email for Analysis</h3>
+                <h3>Ingest Threat Data</h3>
                 <button id="btn-close-modal" class="close-btn">&times;</button>
             </div>
 
+            <!-- Modal Tabs -->
+            <div class="modal-tabs">
+                <button class="tab-btn active" data-target="tab-file">Upload .eml</button>
+                <button class="tab-btn" data-target="tab-raw">Raw Text</button>
+                <button class="tab-btn" data-target="tab-manual">Quick Input</button>
+            </div>
+
             <form id="ingest-form">
-                <div class="form-group">
+                <!-- Tab 1: File Upload -->
+                <div id="tab-file" class="tab-content active">
+                    <div class="upload-zone">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--accent-blue)"
+                            stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        <p>Drag & Drop a <b>.eml</b> or <b>.msg</b> file here</p>
+                        <input type="file" id="input-file" accept=".eml,.msg" class="file-input" />
+                    </div>
+                </div>
+
+                <!-- Tab 2: Raw Text -->
+                <div id="tab-raw" class="tab-content hidden">
+                    <label>Paste Raw Headers & Body</label>
+                    <textarea id="input-raw" rows="6" class="input-control"
+                        placeholder="Return-Path: <hacker@...&#10;Received: from..."></textarea>
+                </div>
+
+                <!-- Tab 3: Manual -->
+                <div id="tab-manual" class="tab-content hidden">
                     <label>Sender (Spoofed or Real)</label>
-                    <input type="text" id="input-sender" placeholder="e.g. security@suspicious-domain.com"
-                        class="input-control" required />
+                    <input type="text" id="input-sender" class="input-control" placeholder="admin@paypal-update.com" />
+                    <label style="margin-top: 10px;">Subject Line</label>
+                    <input type="text" id="input-subject" class="input-control" placeholder="URGENT: Verify Account" />
                 </div>
-                <div class="form-group">
-                    <label>Subject Line</label>
-                    <input type="text" id="input-subject" placeholder="e.g. URGENT: Password Reset Required"
-                        class="input-control" required />
-                </div>
+
                 <div class="modal-actions">
                     <button type="button" class="btn-cancel" id="btn-cancel-modal">Cancel</button>
-                    <button type="submit" class="btn primary-btn">Ingest & Run AI Trace</button>
+                    <button type="submit" class="btn primary-btn">Execute Pipeline</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Leaflet JS -->
+    <!-- Scripts -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="app.js"></script>
 </body>
